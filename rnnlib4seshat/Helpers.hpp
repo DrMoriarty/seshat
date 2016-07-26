@@ -50,7 +50,11 @@ along with RNNLIB.  If not, see <http://www.gnu.org/licenses/>.*/
 #include <boost/iterator/zip_iterator.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/minmax_element.hpp>
+//https://svn.boost.org/trac/boost/ticket/8743
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wredeclared-class-member"
 #include <boost/bimap.hpp>
+#pragma clang diagnostic pop
 #include <boost/foreach.hpp>
 #include <boost/math/distributions.hpp>
 #include <boost/assign/list_of.hpp>
@@ -265,7 +269,11 @@ template <class T> static T bound (
     const T& v, const T& minVal, const T& maxVal) {
   return min(max(minVal, v), maxVal);
 }
+
 //CAST OPERATIONS
+template <class C, class Tr, class R> static basic_ostream<C, Tr>& operator <<(
+    basic_ostream<C, Tr>& out, const R& r);
+
 template<class T> static string str(const T& t) {
   stringstream ss;
   ss << t;
@@ -408,7 +416,7 @@ pair<typename range_value<R>::type, typename range_value<R>::type>
 minmax(const R& r) {
   pair<
     typename range_const_iterator<R>::type,
-    typename range_const_iterator<R>::type> p = minmax_element(
+    typename range_const_iterator<R>::type> p = boost::minmax_element(
         boost::begin(r), boost::end(r));
   return make_pair(*p.first, *p.second);
 }
@@ -485,7 +493,8 @@ template <class R> static typename range_value<R>::type max(const R& r) {
 template <class C, class Tr, class R> static void print_range(
     basic_ostream<C, Tr>& out, const R& r,
     const basic_string<C, Tr>& delim = " ") {
-  typename range_const_iterator<R>::type b = boost::begin(r);
+
+  typename range_const_iterator<R>::type b = boost::begin(r); //vector<bool> failed here....
   typename range_const_iterator<R>::type e = boost::end(r);
   if (b != e) {
     out << *b;
@@ -805,24 +814,24 @@ template<class R1, class R2> static void range_divide_equals(
 //TUPLE OPERATIONS
 template<class T1, class T2> static ostream& operator << (
     ostream& out, const tuple<T1, T2>& t) {
-  out << t.get<0>() << " " << t.get<1>();
+  out << get<0>(t) << " " << get<t>();
   return out;
 }
 template<class T1, class T2, class T3> static ostream& operator << (
     ostream& out, const tuple<T1, T2, T3>& t) {
-  out << t.get<0>() << " " << t.get<1>() << " " << t.get<2>();
+  out << get<0>(t) << " " << get<1>(t) << " " << get<2>(t);
   return out;
 }
 template<class T1, class T2, class T3, class T4> static ostream& operator << (
     ostream& out, const tuple<T1, T2, T3, T4>& t) {
-  out << t.get<0>() << " " << t.get<1>() << " " << t.get<2>() << " "
-      << t.get<3>();
+  out << get<0>(t) << " " << get<1>(t) << " " << get<2>(t) << " "
+      << get<3>(t);
   return out;
 }
 template<class T1, class T2, class T3, class T4, class T5>
 static ostream& operator << (ostream& out, const tuple<T1, T2, T3, T4, T5>& t) {
-  out << t.get<0>() << " " << t.get<1>() << " " << t.get<2>() << " "
-      << t.get<3>() << " " << t.get<4>();
+  out << get<0>(t) << " " << get<1>(t) << " " << get<2>(t) << " "
+      << get<3>(t) << " " << get<4>(t);
   return out;
 }
 //PAIR OPERATIONS

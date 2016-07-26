@@ -76,8 +76,17 @@ struct Mdrnn {
   InputLayer* inputLayer;
   vector<NetworkOutput*> outputs;
   vector<Layer*> outputLayers;
-  vector<bool> bidirectional;
-  vector<bool> symmetry;
+
+  //TODO - seems an issue in STL impl:
+  //no type named 'type' in 'boost::range_const_iterator<std::__1::__bit_const_reference<std::__1::vector<bool, std::__1::allocator<bool> > >, void>' 
+  //compiling "typename range_const_iterator<R>::type b = boost::begin(r);"
+  //workaround is to avoid vector<bool>: 
+  //OR switch to another impl: -stdlib=libstdc++
+  //vector<bool> bidirectional;
+  //vector<bool> symmetry;
+  vector<int> bidirectional;
+  vector<int> symmetry;
+  
   vector<size_t> inputBlock;
   Layer* inputBlockLayer;
   BiasLayer *bias;
@@ -93,8 +102,8 @@ struct Mdrnn {
     out(o), wc(weight), DEH(deh)  {
 
     inputLayer = new InputLayer("input", data.numDims, data.inputSize, data.inputLabels, wc, DEH);
-    bidirectional = conf.get_list<bool>("bidirectional", true, data.numDims);
-    symmetry = conf.get_list<bool>("symmetry", false, data.numDims);
+    bidirectional = conf.get_list<int>("bidirectional", true, data.numDims);
+    symmetry = conf.get_list<int>("symmetry", false, data.numDims);
     inputBlock = conf.get_list<size_t>("inputBlock", 0, data.numDims);
     inputBlockLayer = in(inputBlock, 0) ? 0 : add_layer(new BlockLayer(inputLayer, inputBlock, wc, deh), false);
     bias = new BiasLayer(weight, deh);

@@ -40,7 +40,11 @@ along with RNNLIB.  If not, see <http://www.gnu.org/licenses/>.*/
 #ifndef _INCLUDED_TranscriptionLayer_h  
 #define _INCLUDED_TranscriptionLayer_h  
 
+//https://svn.boost.org/trac/boost/ticket/8743
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wredeclared-class-member"
 #include <boost/bimap.hpp>
+#pragma clang diagnostic pop
 #include "SoftmaxLayer.hpp"
 #include "StringAlignment.hpp"
 
